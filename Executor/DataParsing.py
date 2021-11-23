@@ -57,43 +57,26 @@ class Data_Parsing:
     
 
 
-    def Divide_PDS_data(self,DF):
-        BClist = self._Barcode_Index(DF)
-        n = 0 
-        t1 = datetime.now()
+    def Divide_PDS_data(self,df):
+        bclst = self._Barcode_Index(df)
+
         n = 0
-        LIST = []
-        while n < len(BClist)-1:
-            tup0 = BClist[n]
-            tup1 = BClist[n+1]
+        lst = []
+        while n < len(bclst)-1:
+            tup0 = bclst[n]
+            tup1 = bclst[n+1]
             
             idx = tup0[1]
             idx1 = tup1[1]
+            ## tup=(BC, idx)
 
-            ## tup = (BC, idx)
+            eachdf = df[idx:idx1]
+            lst.append(eachdf)
 
-            eachdf = DF[idx:idx1]
-            LIST.append(eachdf)
-
-            if n == len(BClist)-2:
-                lastdf = DF[idx1:]              
-                LIST.append(lastdf)
+            if n == len(bclst)-2:
+                lastdf = df[idx1:]              
+                lst.append(lastdf)
 
             n += 1
-        t2 = datetime.now()
-
-        print('Make DF list:', t2-t1)
-        return LIST
-
-# %%
-class ReplicateMerge:
-    def RPM_Merging(self,Data_combination):
-        r1 = pd.read_csv('Result/{}_R1_totalRPM_FC_Result.txt'.format(Data_combination[0][0]),sep='\t')
-        r2 = pd.read_csv('Result/{}_R2_totalRPM_FC_Result.txt'.format(Data_combination[0][0]),sep='\t')
-
-        df = pd.concat([r1,r2])
-        df = df.sort_values(by='Sorting_Barcode')
-
-        df.to_csv('Result/{}_Merged_totalRPM_FC_Result.txt'.format(Data_combination[0][0]),sep='\t',index=None)
-        return
+        return lst
 
