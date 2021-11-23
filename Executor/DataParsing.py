@@ -5,60 +5,37 @@ from datetime import datetime
 
 
 class Data_Parsing:
-    def __init__(self):
-        self.chunk = 25
-
     def dfdic(self,df):
-        dflst = self.Divide_PDS_data(df)
+        dflst = self.divide_df(df)
         dic = {}
         for eachdf in dflst:
             sb = eachdf.iloc[0,0]
             dic[sb] = eachdf
         return dic
 
-        
-    def Divide_Dictionary(self, dic, N):
-        List = []
-        tup = [(i,dic[i]) for i in dic]
 
-        for i in range(N):
-            begin = (len(tup)//N)*i
-            end = (len(tup) // N) * (i + 1)
-
-            if i != N-1:
-                List.append(tup[begin:end])
-            else:
-                List.append(tup[begin:])
-
-        DicList = []
-
-
-        for k in List:
-            DicList.append(dict(k))
-        return DicList
-
-    def _Barcode_Index(self,DF):
+    def _barcode_index(self,df):
         ##반드시 Sorting_Barocde가 column 0
         t1 = datetime.now()
         n = 1
         
-        SB = list(DF.iloc[:,0])
-        LIST = [(SB[0],0)]
-        while n < DF.shape[0]:
-            if SB[n] != SB[n-1]:
-                LIST.append((SB[n],n))
+        sb = list(df.iloc[:,0])
+        lst = [(sb[0],0)]
+        while n < df.shape[0]:
+            if sb[n] != sb[n-1]:
+                lst.append((sb[n],n))
             else:
                 pass
             n+=1
         t2 = datetime.now()
 
         print('Barcode_Indexing:', t2-t1)
-        return LIST
+        return lst
     
 
 
-    def Divide_PDS_data(self,df):
-        bclst = self._Barcode_Index(df)
+    def divide_df(self,df):
+        bclst = self._barcode_index(df)
 
         n = 0
         lst = []
