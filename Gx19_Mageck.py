@@ -100,11 +100,8 @@ def main(dataset,rep,groupnum):
 
 # %%
 if __name__ == '__main__':
-    pass
-    for dataset in ['24K']:
-        for rep in ['R1','R2']:
-            for num in [4]:
-                main(dataset,rep,num)
+
+    main(sys.argv[1],sys.argv[2],sys.argv[3])
 
     ## argv[1] = dataset
     ## argv[2] = replicate
