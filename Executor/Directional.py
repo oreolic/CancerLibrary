@@ -9,41 +9,41 @@ from datetime import datetime
 
 class clsDirectional:
 
-    def _Make_Every_ED1_Seq(self,Rnd_Barcode):
-        Base = ['A', 'T', 'G', 'C']
-        ED1_list = []
-        for i in range(len(Rnd_Barcode)):
+    def _make_every_ed1_seq(self,rnd_barcode):
+        base = ['A', 'T', 'G', 'C']
+        ed1_list = []
+        for i in range(len(rnd_barcode)):
             if i == 0:
-                for N in Base:
-                    ED1 = N + Rnd_Barcode[1:]
-                    if ED1 == Rnd_Barcode:
+                for nt in base:
+                    ed1 = nt + rnd_barcode[1:]
+                    if ed1 == rnd_barcode:
                         pass
                     else:
-                        ED1_list.append(ED1)
-            elif i == len(Rnd_Barcode) - 1:
-                for N in Base:
-                    ED1 = Rnd_Barcode[:-1] + N
-                    if ED1 == Rnd_Barcode:
+                        ed1_list.append(ed1)
+            elif i == len(rnd_barcode) - 1:
+                for nt in base:
+                    ed1 = rnd_barcode[:-1] + nt
+                    if ed1 == rnd_barcode:
                         pass
                     else:
-                        ED1_list.append(ED1)
+                        ed1_list.append(ed1)
             else:
-                for N in Base:
-                    ED1 = Rnd_Barcode[:i] + N + Rnd_Barcode[i + 1:]
-                    if ED1 == Rnd_Barcode:
+                for nt in base:
+                    ed1 = rnd_barcode[:i] + nt + rnd_barcode[i + 1:]
+                    if ed1 == rnd_barcode:
                         pass
                     else:
-                        ED1_list.append(ED1)
+                        ed1_list.append(ed1)
 
-        return ED1_list
+        return ed1_list
 
-    def _Possible_ED1(self, df):
-        rndList = list(df.iloc[:,1])
+    def _possible_ed1(self, df):
+        rndlist = list(df.iloc[:,1])
         rnd_dic = dict(zip(df.iloc[:,1],df.iloc[:,2]))
 
-        tupList = []
+        tuplist = []
         final = []
-        for rnd in rndList:
+        for rnd in rndlist:
             if type(rnd) != str:                
                 pass
             else:            
@@ -53,59 +53,59 @@ class clsDirectional:
                     if type(rnd) != str:                        
                         pass
                     else:
-                        possibleEd1 = clsDirectional()._Make_Every_ED1_Seq(rnd)
-                        trueEd1     = [i for i in possibleEd1 if i in rndList]
+                        possible_ed1 = clsDirectional()._make_every_ed1_seq(rnd)
+                        trueEd1     = [i for i in possible_ed1 if i in rndlist]
                         if len(trueEd1) == 0:
                             final.append((rnd,rnd_dic[rnd]))
                         else:
                             for k in trueEd1:
-                                tupList.append([(rnd,rnd_dic[rnd]),(k,rnd_dic[k])])
+                                tuplist.append([(rnd,rnd_dic[rnd]),(k,rnd_dic[k])])
         
         ## Final: Rnd without ED1 in the total Rnd List
-        ## tupList: Rnd tup list with ED1 in the total Rnd List
-        return tupList, final
+        ## tuplist: Rnd tup list with ED1 in the total Rnd List
+        return tuplist, final
 
-    def Compare_Count(self,A, B):
+    def compare_count(self,a, b):
 
-        if A >= 3 * B - 1:
+        if a >= 3 * b - 1:
             return 1
         else:
             return 0
 
-    def _Same_Count(self, Ed1tupList):
-        LIST = []
-        for tup in Ed1tupList:
+    def _same_count(self, ed1tuplist):
+        lst = []
+        for tup in ed1tuplist:
             if tup[0][1] == tup[1][1]:
-                LIST.extend(tup)
+                lst.extend(tup)
             else:
                 pass
-        LIST = list(set(LIST))
-        return LIST
+        lst = list(set(lst))
+        return lst
 
-    def _ED1_Group(self, possibleED1):
+    def _ed1_group(self, possible_ed1):
         ## possibleED1 = return of _Possible_ED1
-        ED1tupList = possibleED1[0]
-        final = possibleED1[1] 
+        ed1_tuplst = possible_ed1[0]
+        final = possible_ed1[1] 
 
-        trueEd1 = [ tup for tup in ED1tupList if clsDirectional().Compare_Count(tup[0][1],tup[1][1]) == 1]
-        same = self._Same_Count(ED1tupList)
+        true_ed1 = [ tup for tup in ed1_tuplst if clsDirectional().compare_count(tup[0][1],tup[1][1]) == 1]
+        same = self._same_count(ed1_tuplst)
         
 
         ## True Ed1 Re-Grouping 
         connode_dic = {}
-        for tup in trueEd1:
+        for tup in true_ed1:
             if tup[1] not in connode_dic:
                 connode_dic[tup[1]] = [tup[0]]
             else:
                 connode_dic[tup[1]].append(tup[0])
 
         for con in connode_dic:
-            mainList = connode_dic[con]
-            if len(mainList) ==1:
+            mainlst = connode_dic[con]
+            if len(mainlst) ==1:
                 pass
             else:
-                mainList.sort(key = lambda x:-x[1]) ##Rnd 많은순
-                trueMain = mainList[0]
+                mainlst.sort(key = lambda x:-x[1]) ##Rnd 많은순
+                trueMain = mainlst[0]
                 connode_dic[con] = [trueMain]
         
         dic = {}
@@ -123,10 +123,10 @@ class clsDirectional:
                 mainnode = connode_dic[tup][0]
                 dic[mainnode].extend(dic[tup])
 
-        allCons = []
+        allcons = []
         for tup in dic:
             tupList = dic[tup]
-            allCons.extend(tupList)
+            allcons.extend(tupList)
             if len(tupList) == 1:
                 pass
             else:
@@ -137,25 +137,23 @@ class clsDirectional:
                         dic[tup].extend(dic[p])
             dic[tup] = list(set(dic[tup]))
             
-        allCons = list(set(allCons))
+        allcons = list(set(allcons))
 
-        finalDic = {}
+        finaldic = {}
         for tup in dic:
-            if tup not in allCons:
-                finalDic[tup] = dic[tup]
+            if tup not in allcons:
+                finaldic[tup] = dic[tup]
             else:
                 pass
 
-
-        dic = finalDic
         overlap = []
-        for t in dic:
+        for t in finaldic:
             if t not in same:
                 pass
             else:
                 overlap.append(t)
                 
-            for k in dic[t]:        
+            for k in finaldic[t]:        
                 if k not in same:
                     pass
                 else:
@@ -167,31 +165,31 @@ class clsDirectional:
              final.append(tup)
 
         
-        for tup in dic:
-            read = tup[1]+sum([i[1] for i in dic[tup]])
+        for tup in finaldic:
+            read = tup[1]+sum([i[1] for i in finaldic[tup]])
             final.append((tup[0],read))
 
         df = pd.DataFrame(final)
         return df
 
 
-    def _Directional_Adjacency(self, eachDF):
-        SB = eachDF.iloc[0,0]
-        possibleED1 = self._Possible_ED1(eachDF)
-        finalRnD   = self._ED1_Group(possibleED1)
+    def _directional_adjacency(self, eachdf):
+        sb = eachdf.iloc[0,0]
+        possible_ed1 = self._possible_ed1(eachdf)
+        final_rnd   = self._ed1_group(possible_ed1)
         
-        finalRnD['Sorting_barcode'] = SB
-        finalRnD = finalRnD[['Sorting_barcode',0,1]]
-        return finalRnD
+        final_rnd['Sorting_barcode'] = sb
+        final_rnd = final_rnd[['Sorting_barcode',0,1]]
+        return final_rnd
 
 
-    def Multi_Directional_Adjacency(self, Splice_PDS_list):
+    def multi_directional(self, dflst):
         t1 = datetime.now()
         with ProcessPoolExecutor(max_workers=25) as executor:
             futs = []
 
-            for eachDF in Splice_PDS_list:
-                fut = executor.submit(self._Directional_Adjacency, eachDF)
+            for eachDF in dflst:
+                fut = executor.submit(self._directional_adjacency, eachDF)
                 futs.append(fut)
 
             merged = []
@@ -199,31 +197,8 @@ class clsDirectional:
                 merged.append(fut.result())
             final_pds = pd.concat(merged)
             t2 = datetime.now()
-            print('Directional_Adjacency: ', t2-t1)
+            print('Directional: ', t2-t1)
             return final_pds
 
 
-# %%
-def editDistance(x, y):
-    # Create distance matrix
-    D = []
-    for i in range(len(x)+1):
-        D.append([0]*(len(y)+1))
-    # Initialize first row and column of matrix
-    for i in range(len(x)+1):
-        D[i][0] = i
-    for i in range(len(y)+1):
-        D[0][i] = i
-    # Fill in the rest of the matrix
-    for i in range(1, len(x)+1):
-        for j in range(1, len(y)+1):
-            distHor = D[i][j-1] + 1
-            distVer = D[i-1][j] + 1
-            if x[i-1] == y[j-1]:
-                distDiag = D[i-1][j-1]
-            else:
-                distDiag = D[i-1][j-1] + 1
-            D[i][j] = min(distHor, distVer, distDiag)
-    # Edit distance is the value in the bottom right corner of the matrix
-    return D[-1][-1]
 # %%
