@@ -8,43 +8,41 @@ from Executor import DataParsing as DP
 #%%
 class TotalRPM:
 
-    def Read_PDS(self, Data_combination):
+    def read_data(self, data_info):
         t1 = datetime.now()
-        PDS_data = pd.read_csv( ##{}_{}_Raw_Data_Integration_File
-            'Result/{}_{}_Processed_Count.txt'.format(Data_combination[0][0], Data_combination[0][1])
+        df = pd.read_csv( ##{}_{}_Raw_Data_Integration_File
+            'Result/{}_{}_Processed_Count.txt'.format(data_info[0][0], data_info[0][1])
             , delimiter='\t')
         t2 = datetime.now()
     
         print('Read_PDS', t2 - t1)
-        return PDS_data
+        return df
 
 
-    def RPM(self,DF,Data_combination):
+    def rpm(self,df,data_info):
         ###DF['D24_Count'] = DF['D24_Count']
         
-        tup = Data_combination[0]
+        tup = data_info[0]
 
         d10 = tup[2]
         d24 = tup[3]
-        tot10 = DF['{}_Count'.format(d10)].sum()
-        tot24 = DF['{}_Count'.format(d24)].sum()
+        tot10 = df['{}_Count'.format(d10)].sum()
+        tot24 = df['{}_Count'.format(d24)].sum()
 
         rpm10 = lambda x:x/tot10*1e6
         rpm24 = lambda x:x/tot24*1e6
 
-        DF['{}_RPM'.format(d10)] = DF['{}_Count'.format(d10)].apply(rpm10)
-        DF['{}_RPM'.format(d24)] = DF['{}_Count'.format(d24)].apply(rpm24)
+        df['{}_RPM'.format(d10)] = df['{}_Count'.format(d10)].apply(rpm10)
+        df['{}_RPM'.format(d24)] = df['{}_Count'.format(d24)].apply(rpm24)
 
-        DF['Fold_Change'] = DF['{}_RPM'.format(d24)]/DF['{}_RPM'.format(d10)]
-
-        return DF
+        return df
 
 
 
 
-    def Write_Pandas(self, rpmdf, Data_combination):
-        tup = Data_combination[0]
-        rpmdf.to_csv('Result/{}_{}_totalRPM_FC_Result.txt'.format(Data_combination[0][0], Data_combination[0][1]),
+    def make_output(self, rpmdf, data_info):
+        tup = data_info[0]
+        rpmdf.to_csv('Result/{}_{}_totalRPM_FC_Result.txt'.format(data_info[0][0], data_info[0][1]),
                   sep='\t', index=False, 
                   header=['Sorting_Barcode', 'RandomBarcode', '{}_Count'.format(tup[2]), '{}_Count'.format(tup[3])
                                                  ,'{}_RPM'.format(tup[2]),'{}_RPM'.format(tup[3]), 'Fold_Change'])
@@ -53,16 +51,16 @@ class TotalRPM:
 
 
 
-    def Return_Bread(self,Data_combination):
+    def calculate_rpm(self,data_info):
 
-        a = self.Read_PDS(Data_combination) 
+        a = self.read_data(data_info) 
      
         t3 = datetime.now()
-        c = self.RPM(a,Data_combination)
+        c = self.rpm(a,data_info)
 
         t4 = datetime.now()
         print('RPM_calculation: ', t4-t3)
-        self.Write_Pandas(c,Data_combination)
+        self.make_output(c,data_info)
 
         return 
 
